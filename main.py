@@ -115,6 +115,7 @@ def scrape_onestophalal(current_time, prefix):
         content = soup.find_all('div', class_="main_box")
         # Example: Assuming each product is in a div with class 'product-item'
         for product in content:
+            download_url = ""
             name = product.find('h5').get_text(strip=True)
             price = product.find('span', class_='money').get_text(strip=True)
             description_url = 'https://onestophalal.com' + product.find('a')['href']
@@ -126,9 +127,9 @@ def scrape_onestophalal(current_time, prefix):
                 description = first_p.get_text()
             image_tag = product.find('img', class_='lazy')
             if 'src' in image_tag.attrs:
-                image_url = image_tag['src']
+                image_url = "https:"+image_tag['src']
             elif 'data-src' in image_tag.attrs:
-                image_url = image_tag['data-src']
+                image_url = "https:"+image_tag['data-src']
             else:
                 image_url = 'No image found'
                 
@@ -164,7 +165,7 @@ def scrape_onestophalal(current_time, prefix):
                 "",
                 "",
                 price,
-                "",
+                download_url,
                 image_url,
                 "",
                 "",
