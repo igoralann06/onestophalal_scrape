@@ -4,7 +4,6 @@ import xlwt
 import os
 from datetime import datetime
 import imghdr
-import json
 
 dynamic_site_urls = ["https://onestophalal.com/pages/fresh-meat", "https://onestophalal.com/collections/halal-jerky"]
 frozen_site = "https://onestophalal.com/pages/deli-frozen"
@@ -66,6 +65,25 @@ def scrape_onestophalal(current_time, prefix):
                 if rating_div:
                     rating = rating_div["data-rating"]
                     rating_num = rating_div["data-raters"]
+                
+                image_tag = soup_product.find('a', class_='image-slide-link')
+                if 'href' in image_tag.attrs:
+                    image_url = "https:"+image_tag['href']
+                    if(image_url):
+                        try:
+                            responseImage = requests.get(image_url)
+                            image_type = imghdr.what(None, responseImage.content)
+                            if responseImage.status_code == 200:
+                                img_url = "products/"+current_time+"/images/"+prefix+str(section_id)+'.'+image_type
+                                with open(img_url, 'wb') as file:
+                                    file.write(responseImage.content)
+                                    download_url = img_url
+                            # download_url = "products/"+current_time+"/images/"+prefix+str(section_id)+'.'+"jpg"
+                        except Exception as e:
+                            print(e)
+                
+                else:
+                    image_url = 'No image found'
 
                 category_source = soup_product.find('ol', class_='breadcrumb')
                 li_tags = category_source.find_all('li')
@@ -76,64 +94,36 @@ def scrape_onestophalal(current_time, prefix):
                 else:
                     category = "No Category"
                 # Add product details to the list
-                script_tags = soup.find_all('script', type='application/ld+json')
-                try:
-                    # Parse the JSON content of the current <script> tag
-                    data = json.loads(script_tags[1].string)
-                    
-                    # Check if the 'offers' key exists
-                    if 'offers' in data:
-                        offers = data['offers']
-                        for offer in offers:
-                            # Add product details to the list
-                            download_url = ""
-                            if(offer["image"]):
-                                try:
-                                    responseImage = requests.get(offer["image"])
-                                    image_type = imghdr.what(None, responseImage.content)
-                                    if responseImage.status_code == 200:
-                                        img_url = "products/"+current_time+"/images/"+prefix+str(section_id)+'.'+image_type
-                                        with open(img_url, 'wb') as file:
-                                            file.write(responseImage.content)
-                                            download_url = img_url
-                                    # download_url = "products/"+current_time+"/images/"+prefix+str(section_id)+'.'+"jpg"
-                                except Exception as e:
-                                    print(e)
-                            
-                            record = [
-                                str(section_id),
-                                "https://onestophalal.com",
-                                offer["url"],
-                                "One Stop Halal",
-                                category,
-                                description,
-                                name,
-                                "",
-                                "",
-                                offer["price"],
-                                download_url,
-                                offer["image"],
-                                "",
-                                "",
-                                rating,
-                                rating_num,
-                                "766 Gladys Avenue, Los Angeles, CA 90021",
-                                "+1(833)425-2566",
-                                "",
-                                "",
-                                "",
-                                nutrition,
-                                certification,
-                            ]
-                            
-                            products.append(record)
-                            print(record)
-                            
-                            section_id = section_id + 1
-                            
-                except json.JSONDecodeError:
-                    # Handle cases where the JSON is malformed or not relevant
-                    print("Skipping a non-relevant or malformed JSON-LD script.")
+                record = [
+                    str(section_id),
+                    "https://onestophalal.com",
+                    "https://onestophalal.com" + link['href'],
+                    "One Stop Halal",
+                    category,
+                    description,
+                    name,
+                    "",
+                    "",
+                    price,
+                    download_url,
+                    image_url,
+                    "",
+                    "",
+                    rating,
+                    rating_num,
+                    "766 Gladys Avenue, Los Angeles, CA 90021",
+                    "+1(833)425-2566",
+                    "",
+                    "",
+                    "",
+                    nutrition,
+                    certification,
+                ]
+                
+                products.append(record)
+                print(record)
+                
+                section_id = section_id + 1
             except:
                 print("Cannot find the product")
             
@@ -173,6 +163,22 @@ def scrape_onestophalal(current_time, prefix):
                 rating = rating_div["data-rating"]
                 rating_num = rating_div["data-raters"]
             
+            image_tag = soup_product.find('a', class_='image-slide-link')
+            if 'href' in image_tag.attrs:
+                image_url = "https:"+image_tag['href']
+                if(image_url):
+                    try:
+                        responseImage = requests.get(image_url)
+                        image_type = imghdr.what(None, responseImage.content)
+                        if responseImage.status_code == 200:
+                            img_url = "products/"+current_time+"/images/"+prefix+str(section_id)+'.'+image_type
+                            with open(img_url, 'wb') as file:
+                                file.write(responseImage.content)
+                                download_url = img_url
+                        # download_url = "products/"+current_time+"/images/"+prefix+str(section_id)+'.'+"jpg"
+                    except Exception as e:
+                        print(e)
+            
             else:
                 image_url = 'No image found'
 
@@ -185,64 +191,31 @@ def scrape_onestophalal(current_time, prefix):
             else:
                 category = "No Category"
             # Add product details to the list
-            script_tags = soup.find_all('script', type='application/ld+json')
-            try:
-                # Parse the JSON content of the current <script> tag
-                data = json.loads(script_tags[1].string)
-                
-                # Check if the 'offers' key exists
-                if 'offers' in data:
-                    offers = data['offers']
-                    for offer in offers:
-                        # Add product details to the list
-                        download_url = ""
-                        if(offer["image"]):
-                            try:
-                                responseImage = requests.get(offer["image"])
-                                image_type = imghdr.what(None, responseImage.content)
-                                if responseImage.status_code == 200:
-                                    img_url = "products/"+current_time+"/images/"+prefix+str(section_id)+'.'+image_type
-                                    with open(img_url, 'wb') as file:
-                                        file.write(responseImage.content)
-                                        download_url = img_url
-                                # download_url = "products/"+current_time+"/images/"+prefix+str(section_id)+'.'+"jpg"
-                            except Exception as e:
-                                print(e)
-                        
-                        record = [
-                            str(section_id),
-                            "https://onestophalal.com",
-                            offer["url"],
-                            "One Stop Halal",
-                            category,
-                            description,
-                            name,
-                            "",
-                            "",
-                            offer["price"],
-                            download_url,
-                            offer["image"],
-                            "",
-                            "",
-                            rating,
-                            rating_num,
-                            "766 Gladys Avenue, Los Angeles, CA 90021",
-                            "+1(833)425-2566",
-                            "",
-                            "",
-                            "",
-                            nutrition,
-                            certification,
-                        ]
-                        
-                        products.append(record)
-                        print(record)
-                        
-                        section_id = section_id + 1
-                        
-            except json.JSONDecodeError:
-                # Handle cases where the JSON is malformed or not relevant
-                print("Skipping a non-relevant or malformed JSON-LD script.")
+            record = [
+                str(section_id),
+                "https://onestophalal.com",
+                "https://onestophalal.com" + link['href'],
+                "One Stop Halal",
+                category,
+                description,
+                name,
+                "",
+                "",
+                price,
+                download_url,
+                image_url,
+                "",
+                "",
+                rating,
+                rating_num,
+                "766 Gladys Avenue, Los Angeles, CA 90021",
+                "+1(833)425-2566",
+                "",
+                "",
+                "",
+                nutrition,
+                certification,
+            ]
             
             products.append(record)
             print(record)
@@ -298,6 +271,19 @@ def scrape_onestophalal(current_time, prefix):
                     image_url = "https:"+image_tag['data-src']
                 else:
                     image_url = 'No image found'
+                    
+                if(image_url):
+                    try:
+                        responseImage = requests.get(image_url)
+                        image_type = imghdr.what(None, responseImage.content)
+                        if responseImage.status_code == 200:
+                            img_url = "products/"+current_time+"/images/"+prefix+str(section_id)+'.'+image_type
+                            with open(img_url, 'wb') as file:
+                                file.write(responseImage.content)
+                                download_url = img_url
+                        # download_url = "products/"+current_time+"/images/"+prefix+str(section_id)+'.'+"jpg"
+                    except Exception as e:
+                        print(e)
 
                 category_source = soup.find('ol', class_='breadcrumb')
                 li_tags = category_source.find_all('li')
@@ -307,65 +293,37 @@ def scrape_onestophalal(current_time, prefix):
                     category = li_tags[1].get_text(strip=True)
                 else:
                     category = "No Category"
-                    
-                script_tags = soup.find_all('script', type='application/ld+json')
-                try:
-                    # Parse the JSON content of the current <script> tag
-                    data = json.loads(script_tags[1].string)
-                    
-                    # Check if the 'offers' key exists
-                    if 'offers' in data:
-                        offers = data['offers']
-                        for offer in offers:
-                            # Add product details to the list
-                            download_url = ""
-                            if(offer["image"]):
-                                try:
-                                    responseImage = requests.get(offer["image"])
-                                    image_type = imghdr.what(None, responseImage.content)
-                                    if responseImage.status_code == 200:
-                                        img_url = "products/"+current_time+"/images/"+prefix+str(section_id)+'.'+image_type
-                                        with open(img_url, 'wb') as file:
-                                            file.write(responseImage.content)
-                                            download_url = img_url
-                                    # download_url = "products/"+current_time+"/images/"+prefix+str(section_id)+'.'+"jpg"
-                                except Exception as e:
-                                    print(e)
-                            
-                            record = [
-                                str(section_id),
-                                "https://onestophalal.com",
-                                offer["url"],
-                                "One Stop Halal",
-                                category,
-                                description,
-                                name,
-                                "",
-                                "",
-                                offer["price"],
-                                download_url,
-                                offer["image"],
-                                "",
-                                "",
-                                rating,
-                                rating_num,
-                                "766 Gladys Avenue, Los Angeles, CA 90021",
-                                "+1(833)425-2566",
-                                "",
-                                "",
-                                "",
-                                nutrition,
-                                certification,
-                            ]
-                            
-                            products.append(record)
-                            print(record)
-                            
-                            section_id = section_id + 1
-                            
-                except json.JSONDecodeError:
-                    # Handle cases where the JSON is malformed or not relevant
-                    print("Skipping a non-relevant or malformed JSON-LD script.")
+                # Add product details to the list
+                record = [
+                    str(section_id),
+                    "https://onestophalal.com",
+                    "https://onestophalal.com" + product.find('a')['href'],
+                    "One Stop Halal",
+                    category,
+                    description,
+                    name,
+                    "",
+                    "",
+                    price,
+                    download_url,
+                    image_url,
+                    "",
+                    "",
+                    rating,
+                    rating_num,
+                    "766 Gladys Avenue, Los Angeles, CA 90021",
+                    "+1(833)425-2566",
+                    "",
+                    "",
+                    "",
+                    nutrition,
+                    certification,
+                ]
+                
+                products.append(record)
+                print(record)
+                
+                section_id = section_id + 1
             except:
                 print("Cannot find the product")
     
