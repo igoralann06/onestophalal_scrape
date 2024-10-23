@@ -113,15 +113,12 @@ def scrape_onestophalal(current_time, prefix):
     for link in links:
         download_url = ""
         response = requests.get("https://onestophalal.com" + link['href'])
+        print("https://onestophalal.com" + link['href'])
         soup_product = BeautifulSoup(response.text, 'html.parser')
-        try:
-            name = soup_product.find('h1', itemprop="name").get_text(strip=True)
-        except:
-            name = ""
-        try:
-            price = soup_product.find('span', class_='money').get_text(strip=True)
-        except:
-            price = ""
+        
+        name = soup_product.find('h1', itemprop="name").get_text(strip=True)
+        price = soup_product.find('span', class_='money').get_text(strip=True)
+            
         parent_div = soup_product.find('div', id='tabs-2')
         first_p = parent_div.find('p')
         if first_p:
