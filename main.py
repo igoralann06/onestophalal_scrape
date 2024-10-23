@@ -118,7 +118,10 @@ def scrape_onestophalal(current_time, prefix):
             name = soup_product.find('h1', itemprop="name").get_text(strip=True)
         except:
             name = ""
-        price = soup_product.find('span', class_='money').get_text(strip=True)
+        try:
+            price = soup_product.find('span', class_='money').get_text(strip=True)
+        except:
+            price = ""
         parent_div = soup_product.find('div', id='tabs-2')
         first_p = parent_div.find('p')
         if first_p:
