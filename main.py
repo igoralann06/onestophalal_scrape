@@ -79,6 +79,7 @@ def scrape_onestophalal(current_time, prefix):
                 str(section_id),
                 "https://onestophalal.com",
                 "https://onestophalal.com" + link['href'],
+                "One Stop Halal",
                 category,
                 description,
                 name,
