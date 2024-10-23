@@ -110,72 +110,72 @@ def scrape_onestophalal(current_time, prefix):
     soup = BeautifulSoup(response.text, 'html.parser')
     links = soup.find_all('a', class_='frozen_page')
 
-    for link in links:
-        download_url = ""
-        response = requests.get("https://onestophalal.com" + link['href'])
-        soup_product = BeautifulSoup(response.text, 'html.parser')
-        name = soup_product.find('h1', itemprop="name").get_text(strip=True)
-        price = soup_product.find('span', class_='money').get_text(strip=True)
-        parent_div = soup_product.find('div', id='tabs-2')
-        first_p = parent_div.find('p')
-        if first_p:
-            description = first_p.get_text()
-        image_tag = soup_product.find('a', class_='image-slide-link')
-        if 'href' in image_tag.attrs:
-            image_url = "https:"+image_tag['href']
-            if(image_url):
-                try:
-                    responseImage = requests.get(image_url)
-                    image_type = imghdr.what(None, responseImage.content)
-                    if responseImage.status_code == 200:
-                        img_url = "products/"+current_time+"/images/"+prefix+str(section_id)+'.'+image_type
-                        with open(img_url, 'wb') as file:
-                            file.write(responseImage.content)
-                            download_url = img_url
-                    # download_url = "products/"+current_time+"/images/"+prefix+str(section_id)+'.'+"jpg"
-                except Exception as e:
-                    print(e)
+    # for link in links:
+    #     download_url = ""
+    #     response = requests.get("https://onestophalal.com" + link['href'])
+    #     soup_product = BeautifulSoup(response.text, 'html.parser')
+    #     name = soup_product.find('h1', itemprop="name").get_text(strip=True)
+    #     price = soup_product.find('span', class_='money').get_text(strip=True)
+    #     parent_div = soup_product.find('div', id='tabs-2')
+    #     first_p = parent_div.find('p')
+    #     if first_p:
+    #         description = first_p.get_text()
+    #     image_tag = soup_product.find('a', class_='image-slide-link')
+    #     if 'href' in image_tag.attrs:
+    #         image_url = "https:"+image_tag['href']
+    #         if(image_url):
+    #             try:
+    #                 responseImage = requests.get(image_url)
+    #                 image_type = imghdr.what(None, responseImage.content)
+    #                 if responseImage.status_code == 200:
+    #                     img_url = "products/"+current_time+"/images/"+prefix+str(section_id)+'.'+image_type
+    #                     with open(img_url, 'wb') as file:
+    #                         file.write(responseImage.content)
+    #                         download_url = img_url
+    #                 # download_url = "products/"+current_time+"/images/"+prefix+str(section_id)+'.'+"jpg"
+    #             except Exception as e:
+    #                 print(e)
         
-        else:
-            image_url = 'No image found'
+    #     else:
+    #         image_url = 'No image found'
 
-        category_source = soup_product.find('ol', class_='breadcrumb')
-        li_tags = category_source.find_all('li')
+    #     category_source = soup_product.find('ol', class_='breadcrumb')
+    #     li_tags = category_source.find_all('li')
 
-        # Get the content of the second <li> tag
-        if len(li_tags) > 1:  # Check if there are at least 2 <li> tags
-            category = li_tags[1].get_text(strip=True)
-        else:
-            category = "No Category"
-        # Add product details to the list
-        record = [
-            str(section_id),
-            "https://onestophalal.com",
-            "https://onestophalal.com" + link['href'],
-            "One Stop Halal",
-            category,
-            description,
-            name,
-            "",
-            "",
-            price,
-            download_url,
-            image_url,
-            "",
-            "",
-            "",
-            "",
-            "766 Gladys Avenue, Los Angeles, CA 90021",
-            "+1(833)425-2566",
-            "",
-            "",
-            "",
-        ]
+    #     # Get the content of the second <li> tag
+    #     if len(li_tags) > 1:  # Check if there are at least 2 <li> tags
+    #         category = li_tags[1].get_text(strip=True)
+    #     else:
+    #         category = "No Category"
+    #     # Add product details to the list
+    #     record = [
+    #         str(section_id),
+    #         "https://onestophalal.com",
+    #         "https://onestophalal.com" + link['href'],
+    #         "One Stop Halal",
+    #         category,
+    #         description,
+    #         name,
+    #         "",
+    #         "",
+    #         price,
+    #         download_url,
+    #         image_url,
+    #         "",
+    #         "",
+    #         "",
+    #         "",
+    #         "766 Gladys Avenue, Los Angeles, CA 90021",
+    #         "+1(833)425-2566",
+    #         "",
+    #         "",
+    #         "",
+    #     ]
         
-        products.append(record)
-        print(record)
+    #     products.append(record)
+    #     print(record)
         
-        section_id = section_id + 1
+    #     section_id = section_id + 1
 
     for url in urls:
         last_slash_index = url.rfind('/')
