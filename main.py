@@ -33,6 +33,9 @@ def get_record(url):
         certification_div = soup_product.find('div', id='tabs-4')
         if certification_div:
             certification = certification_div.get_text(strip=True)
+        else:
+            certification = nutrition
+            nutrition = ""
         
         rating_div = soup_product.find('div', class_='loox-rating')
         if rating_div:
@@ -177,6 +180,9 @@ def scrape_onestophalal(current_time, prefix):
                 certification_div = soup.find('div', id='tabs-4')
                 if certification_div:
                     certification = certification_div.get_text(strip=True)
+                else:
+                    certification = nutrition
+                    nutrition = ""
                     
                 rating_div = soup.find('div', class_='loox-rating')
                 if rating_div:
