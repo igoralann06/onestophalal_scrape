@@ -8,6 +8,7 @@ import imghdr
 dynamic_site_urls = ["https://onestophalal.com/pages/fresh-meat", "https://onestophalal.com/collections/halal-jerky"]
 frozen_site = "https://onestophalal.com/pages/deli-frozen"
 products = []
+section_id = 1
 
 def get_record(url):
     try:
