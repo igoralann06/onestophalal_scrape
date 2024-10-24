@@ -11,6 +11,7 @@ products = []
 section_id = 1
 
 def get_record(url):
+    global section_id
     try:
         download_url = ""
         nutrition = ""
@@ -69,7 +70,7 @@ def get_record(url):
         record = [
             str(section_id),
             "https://onestophalal.com",
-            "https://onestophalal.com" + link['href'],
+            url,
             "One Stop Halal",
             category,
             description,
@@ -104,7 +105,7 @@ def scrape_onestophalal(current_time, prefix):
     response = requests.get("https://onestophalal.com")
     soup = BeautifulSoup(response.text, 'html.parser')
     urls = []
-    section_id = 1
+    global section_id
     nav = soup.find("nav", class_="wsmenu")
 
     sub_lists = nav.find_all('ul', class_="wsmenu-sub-list")
