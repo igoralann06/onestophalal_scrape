@@ -134,7 +134,7 @@ def scrape_onestophalal(current_time, prefix):
         
         collection_links = soup.find_all('g', class_='hlal_1234')
         for link in collection_links:
-            get_record("https://onestophalal.com" + link["onclick"])
+            get_record(link["onclick"])
     # site
     response = requests.get(frozen_site)
     soup = BeautifulSoup(response.text, 'html.parser')
