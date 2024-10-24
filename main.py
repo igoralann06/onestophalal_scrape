@@ -165,11 +165,12 @@ def scrape_onestophalal(current_time, prefix):
                 rating = "",
                 rating_num = ""
                 
-                name = product.find('h5').get_text(strip=True)
-                price = product.find('span', class_='money').get_text(strip=True)
                 description_url = 'https://onestophalal.com' + product.find('a')['href']
                 response = requests.get(description_url)
                 soup = BeautifulSoup(response.text, 'html.parser')
+                
+                name = soup.find('h1', itemprop="name").get_text(strip=True)
+                price = soup.find('span', class_='money').get_text(strip=True)
                 parent_div = soup.find('div', id='tabs-2')
                 description = parent_div.get_text(strip = True)
                 
